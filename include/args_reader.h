@@ -26,14 +26,10 @@ typedef struct {
     char* ref_filename;
 } program_args;
 
-/*
- * populate the fileds in ARGS with values from the command line
- */
+/* populate the fileds in ARGS with values from the command line */
 int get_args(program_args* args, int argc, char** argv);
 
-/*
- * print useful info to the user if their input was not correct
- */
+/* print useful info to the user if their input was not correct */
 void report_failure(void);
 
 #endif

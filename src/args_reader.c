@@ -1,8 +1,14 @@
-#include "args_reader.h"
+/*
+ * args_reader.c
+ * Author: Josh Leath
+ * Last Updated: 6/4/17
+ */
+#include "../include/args_reader.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 
 int get_args(program_args* args, int argc, char** argv)
 {

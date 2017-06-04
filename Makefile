@@ -6,26 +6,33 @@ CC = gcc
 CFLAGS = -g -Wall -Werror -std=c99 -m64
 
 all: csim test-trans tracegen
-	# Generate a handin tar file each time you compile
-	-tar -cvf ${USER}-handin.tar  csim.c trans.c 
 
-csim: csim.c cachelab.c cachelab.h
-	$(CC) $(CFLAGS) -o csim csim.c cachelab.c -lm
+csim: src/csim.c cachelab cache_simulator args_reader
+	$(CC) $(CFLAGS) -o csim bin/cache_simulator.o bin/cachelab.o bin/args_reader.o src/csim.c -lm
 
-test-trans: test-trans.c trans.o cachelab.c cachelab.h
-	$(CC) $(CFLAGS) -o test-trans test-trans.c cachelab.c trans.o 
+test-trans: src/test-trans.c trans cachelab
+	$(CC) $(CFLAGS) -o test-trans src/test-trans.c src/cachelab.c bin/trans.o 
 
-tracegen: tracegen.c trans.o cachelab.c
-	$(CC) $(CFLAGS) -O0 -o tracegen tracegen.c trans.o cachelab.c
+tracegen: src/tracegen.c trans cachelab
+	$(CC) $(CFLAGS) -O0 -o tracegen src/tracegen.c bin/trans.o src/cachelab.c
 
-trans.o: trans.c
-	$(CC) $(CFLAGS) -O0 -c trans.c
+trans: src/trans.c
+	$(CC) $(CFLAGS) -O0 -o bin/trans.o -c src/trans.c
+
+args_reader: src/args_reader.c include/args_reader.h
+	$(CC) $(CFLAGS) -O0 -o bin/args_reader.o -c src/args_reader.c
+
+cache_simulator: src/cache_simulator.c include/cache_simulator.h
+	$(CC) $(CFLAGS) -O0 -o bin/cache_simulator.o -c src/cache_simulator.c
+
+cachelab: src/cachelab.c include/cachelab.h
+	$(CC) $(CFLAGS) -o bin/cachelab.o -c src/cachelab.c
 
 #
 # Clean the src dirctory
 #
 clean:
-	rm -rf *.o
+	rm -rf bin/*.o
 	rm -f *.tar
 	rm -f csim
 	rm -f test-trans tracegen

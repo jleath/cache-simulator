@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <getopt.h>
-#include "cachelab.h"
+#include "../include/cachelab.h"
 #include <string.h>
 
 /* External variables declared in cachelab.c */

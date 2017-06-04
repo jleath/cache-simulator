@@ -1,18 +1,32 @@
-#include "cachelab.h"
-#include "args_reader.h"
-#include "cache_simulator.h"
+/*
+ * csim.c
+ * Author: Josh Leath
+ * Last Updated: 6/4/17
+ */
+#include "../include/cachelab.h"
+#include "../include/args_reader.h"
+#include "../include/cache_simulator.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <inttypes.h>
 
+/* A type for an instruction read from a valgrind reference file. */
 typedef struct {
+    /* a letter indicating the operation. */
     char op;
+    /* A 64 bit memory address. */
     uint64_t address;
+    /* The number of bytes the operation should act on. */
     unsigned size;
 } instruction;
 
+/* 
+ * Read an instruction from file and store the details in inst.
+ * Returns nonzero if an instruction was read successfully, else returns 0.
+ */
 int read_instruction(FILE* file, instruction* inst);
+/* outputs the results of an operation */
 void print_result(op_state state);
 
 int main(int argc, char** argv)

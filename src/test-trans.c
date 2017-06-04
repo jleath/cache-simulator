@@ -11,7 +11,7 @@
 #include <signal.h>
 #include <getopt.h>
 #include <sys/types.h>
-#include "cachelab.h"
+#include "../include/cachelab.h"
 #include <sys/wait.h> // fir WEXITSTATUS
 #include <limits.h> // for INT_MAX
 
