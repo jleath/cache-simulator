@@ -15,8 +15,6 @@
 
 /* Return the number of the line that was least recently used. */
 line* lru(cache_simulator* cache, int set_index, int num_lines);
-/* Set the tag, valid bit, and instruction number values of a line. */
-void update_line(line* line_to_update, unsigned tag, int inst_no);
 
 cache_simulator* build_simulator(int b, int s, int e)
 {
@@ -48,24 +46,26 @@ void destroy_simulator(cache_simulator* cache)
 
 op_state check_cache(cache_simulator* cache, address_info* addr, int inst_no)
 {
+    // get state from the cache
     int lines_per_set = cache->lines_per_set;
     int set_index = addr->set_index;
-    //int start_of_set = get_line_index(set_index, 0, lines_per_set);
-    //int end_of_set = get_line_index(set_index, lines_per_set, lines_per_set);
     unsigned tag = addr->tag;
+    
+    // a line pointer to store the first open line we find
     line* open_line = NULL;
+    line* curr_line = &(cache->lines[set_index * lines_per_set]);
 
-    for (int i = 0; i < lines_per_set; ++i) {
-        int line_no = (set_index * lines_per_set) + i;
-        line* curr_line = &(cache->lines[line_no]);
+    // iterate through each line looking for a cache hit
+    for (int i = 0; i < lines_per_set; ++i, curr_line++) {
         bool equal_tags = curr_line->tag == tag;
         bool valid_line = curr_line->valid_bit;
         if (equal_tags && valid_line) {
             /* cache hit */
-            update_line(curr_line, tag, inst_no);
+            curr_line->tag = tag;
+            curr_line->last_instruction = inst_no;
             cache->hit_count += 1;
             return CACHE_HIT;
-        } else if (! valid_line)
+        } else if (! valid_line && open_line == NULL)
             /* remember the index of an open line */
             open_line = curr_line;
     }
@@ -74,12 +74,16 @@ op_state check_cache(cache_simulator* cache, address_info* addr, int inst_no)
 
     /* updated the open line we found if we found one */
     if (open_line != NULL) {
-        update_line(open_line, tag, inst_no);
+        open_line->tag = tag;
+        open_line->valid_bit = true;
+        open_line->last_instruction = inst_no;
     } else {
         /* otherwise we have to replace an existing line */
         cache->eviction_count += 1;
-        line* line_to_replace = lru(cache, addr->set_index, lines_per_set);
-        update_line(line_to_replace, tag, inst_no);
+        line* line_to_replace = lru(cache, set_index, lines_per_set);
+        //update_line(line_to_replace, tag, inst_no);
+        line_to_replace->tag = tag;
+        line_to_replace->last_instruction = inst_no;
         return CACHE_EVICTION;
     }
     return CACHE_MISS;
@@ -101,11 +105,4 @@ line* lru(cache_simulator* cache, int set_index, int num_lines)
         curr++;
     }
     return result;
-}
-
-void update_line(line* line_to_update, unsigned tag, int inst_no)
-{
-    line_to_update->tag = tag;
-    line_to_update->valid_bit = true;
-    line_to_update->last_instruction = inst_no;
 }

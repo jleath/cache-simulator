@@ -20,16 +20,16 @@ trans: src/trans.c
 	$(CC) $(CFLAGS) -O0 -o bin/trans.o -c src/trans.c
 
 args_reader: src/args_reader.c include/args_reader.h
-	$(CC) $(CFLAGS) -O0 -o bin/args_reader.o -c src/args_reader.c
+	$(CC) $(CFLAGS) -pg -O0 -o bin/args_reader.o -c src/args_reader.c
 
 cache_simulator: src/cache_simulator.c include/cache_simulator.h
 	$(CC) $(CFLAGS) -pg -O0 -o bin/cache_simulator.o -c src/cache_simulator.c
 
 cachelab: src/cachelab.c include/cachelab.h
-	$(CC) $(CFLAGS) -o bin/cachelab.o -c src/cachelab.c
+	$(CC) $(CFLAGS) -pg -o bin/cachelab.o -c src/cachelab.c
 
 instruction_reader: src/instruction_reader.c include/instruction_reader.h
-	$(CC) $(CFLAGS) -o bin/instruction_reader.o -c src/instruction_reader.c
+	$(CC) $(CFLAGS) -pg -o bin/instruction_reader.o -c src/instruction_reader.c
 
 #
 # Clean the src dirctory

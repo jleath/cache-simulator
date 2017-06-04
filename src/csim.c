@@ -45,14 +45,23 @@ int main(int argc, char** argv)
     op_state result1, result2;
     instruction instr;
     address_info addr;
+    int s, b, tag_len;
+    s = args.s;
+    b = args.b;
+    tag_len = cache->tag_len;
+    int tag_mask = ~(-1 << tag_len);
+    int offset_mask = ~(-1 << s);
+    int other_bits = b+s;
     for (int inst_no = 0; read_instruction(ref_file, &instr); inst_no++) {
         /* Fill address_info */
-        addr.tag = (instr.address >> (args.b + args.s)) & ~(-1 << cache->tag_len);
-        addr.set_index = (instr.address >> args.b) & ~(-1 << args.s);
-        addr.offset = instr.address & ~(-1 << args.s);
+        uint64_t address = instr.address;
+        int op = instr.op;
+        addr.tag = (address >> other_bits) & tag_mask;
+        addr.set_index = (address >> b) & offset_mask;
+        addr.offset = address & offset_mask;
         
         /* If the op is a modify, we know that the second cache check with be a hit. */
-        if (instr.op == 'M') {
+        if (op == 'M') {
             result2 = CACHE_HIT;
             inst_no += 1;
             cache->hit_count += 1;
@@ -63,12 +72,13 @@ int main(int argc, char** argv)
         
         /* Print results */
         if (args.verbose) {
-            printf("%c ", instr.op);
-            printf("%" PRIx64 , instr.address);
+            printf("%c ", op);
+            printf("%" PRIx64 , address);
             printf(",%x", instr.size);
             print_result(result1);
-            if (instr.op == 'M')
+            if (op == 'M')
                 print_result(result2);
+            printf("\n");
         }
     }
     fclose(ref_file);
