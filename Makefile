@@ -7,8 +7,8 @@ CFLAGS = -g -Wall -Werror -std=c99 -m64
 
 all: csim test-trans tracegen
 
-csim: src/csim.c cachelab cache_simulator args_reader
-	$(CC) $(CFLAGS) -o csim bin/cache_simulator.o bin/cachelab.o bin/args_reader.o src/csim.c -lm
+csim: src/csim.c cachelab cache_simulator args_reader instruction_reader
+	$(CC) $(CFLAGS) -pg -o csim bin/instruction_reader.o bin/cache_simulator.o bin/cachelab.o bin/args_reader.o src/csim.c -lm
 
 test-trans: src/test-trans.c trans cachelab
 	$(CC) $(CFLAGS) -o test-trans src/test-trans.c src/cachelab.c bin/trans.o 
@@ -23,10 +23,13 @@ args_reader: src/args_reader.c include/args_reader.h
 	$(CC) $(CFLAGS) -O0 -o bin/args_reader.o -c src/args_reader.c
 
 cache_simulator: src/cache_simulator.c include/cache_simulator.h
-	$(CC) $(CFLAGS) -O0 -o bin/cache_simulator.o -c src/cache_simulator.c
+	$(CC) $(CFLAGS) -pg -O0 -o bin/cache_simulator.o -c src/cache_simulator.c
 
 cachelab: src/cachelab.c include/cachelab.h
 	$(CC) $(CFLAGS) -o bin/cachelab.o -c src/cachelab.c
+
+instruction_reader: src/instruction_reader.c include/instruction_reader.h
+	$(CC) $(CFLAGS) -o bin/instruction_reader.o -c src/instruction_reader.c
 
 #
 # Clean the src dirctory
@@ -38,3 +41,4 @@ clean:
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f*
 	rm -f .csim_results .marker
+	rm -f gmon.out
