@@ -41,4 +41,5 @@ clean:
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f*
 	rm -f .csim_results .marker
-	rm -f gmon.out
+	rm -f *.out
+	rm -f *.tmp

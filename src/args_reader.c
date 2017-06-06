@@ -1,7 +1,7 @@
 /*
  * args_reader.c
  * Author: Josh Leath
- * Last Updated: 6/4/17
+ * Last Updated: 6/5/17
  */
 #include "../include/args_reader.h"
 #include <stdbool.h>
@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <getopt.h>
 
+/*
+ * A helper function for reading the arguments to the csim program.
+ * Returns 0 if the args were not entered properly, else 1.
+ */
 int get_args(program_args* args, int argc, char** argv)
 {
     int op;
@@ -33,9 +37,6 @@ int get_args(program_args* args, int argc, char** argv)
             case 't':
                 args->ref_filename = optarg;
                 break;
-            default:
-                /* should never hit this */
-                break;
         }
     }
     if (args->ref_filename == NULL || args->b <= 0 || args->s <= 0
@@ -44,6 +45,9 @@ int get_args(program_args* args, int argc, char** argv)
     return 1;
 }
 
+/*
+ * Prints usage information to the user.
+ */
 void report_failure(void)
 {
     printf("./csim: missing required arguments\n");
